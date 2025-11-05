@@ -1,0 +1,25 @@
+name: 'Setup Dependencies & Run Tests'
+description: 'Install the dependencies and run tests'
+inputs:
+  version-python:
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Install uv and set up Python
+      uses: astral-sh/setup-uv@v6
+      with:
+        version: "0.9.6"
+        enable-cache: true
+        python-version: ${{ inputs.version-python }}
+
+    - name: Install project dependencies
+      shell: bash
+      run: |
+        uv venv --python ${{ inputs.version-python }} && uv sync --extra test
+
+    - name: Test with pytest
+      shell: bash
+      run: |
+        uv run pytest src/spn/tests
